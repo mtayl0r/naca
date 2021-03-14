@@ -1,4 +1,10 @@
 /*
+ * JLib - Publicitas Java library v1.2.0.
+ *
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Publicitas SA.
+ * Licensed under LGPL (LGPL-LICENSE.txt) license.
+ */
+/*
  * JLib - Publicitas Java library.
  *
  * Copyright (c) 2005, 2006, 2007, 2008 Publicitas SA.
@@ -58,7 +64,7 @@ public abstract class LogCenter extends LogCenterCloseMBeam // LogCenterOpenMBea
 		m_patternLayout = patternLayout;
 	}	
 	
-	protected LogPatternLayout m_patternLayout = null;
+	LogPatternLayout m_patternLayout = null;
 
 	protected boolean m_bEnable = false;                    // If not enabled, the log center doesn't accept any event.
 	protected String m_csChannel = null;

@@ -1,4 +1,10 @@
 /*
+ * JLib - Publicitas Java library v1.2.0.
+ *
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009 Publicitas SA.
+ * Licensed under LGPL (LGPL-LICENSE.txt) license.
+ */
+/*
  * JLib - Publicitas Java library.
  *
  * Copyright (c) 2005, 2006, 2007, 2008 Publicitas SA.
@@ -15,14 +21,17 @@ package jlib.xml;
 
 
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Vector;
@@ -52,6 +61,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
+
+import com.sun.org.apache.xml.internal.serialize.OutputFormat;
+import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
 
 /**
@@ -85,6 +97,11 @@ public class Tag
 		m_doc = CreateDocument();
 	}
 	
+	public Tag(Document doc)
+	{
+		setDoc(doc);
+	}
+	
 	public Tag(String name)
 	{
 		m_doc = CreateDocument();
@@ -101,6 +118,11 @@ public class Tag
 	public Document getDoc()
 	{
 		return m_doc;
+	}
+	
+	public Element getElement()
+	{
+		return m_elem;
 	}
 			
 	private Tag(Document doc, Element elem)
@@ -264,6 +286,17 @@ public class Tag
 		if(m_elem != null)
 			return m_elem.getAttribute(csArgName);
 		return null;
+	}
+	
+	public String getVal(String csArgName, String csDefaultValue)
+	{
+		if(m_elem != null)
+		{
+			String cs = m_elem.getAttribute(csArgName);
+			if(!StringUtil.isEmpty(cs))
+				return cs;
+		}
+		return csDefaultValue;
 	}
 	
 	public void updateVal(String csArgName, String csValue)
@@ -853,6 +886,47 @@ public class Tag
 //		}
 //		return false;
 //	}
+	
+	public String exportIndented()
+	{
+		 try 
+		 {
+	        OutputFormat format = new OutputFormat(m_doc);
+	        format.setIndenting(true);
+	        format.setIndent(4);
+	        StringWriter sw = new StringWriter();
+	        Writer output = new BufferedWriter(sw);
+	        XMLSerializer serializer = new XMLSerializer(output, format);
+	        serializer.serialize(m_doc);
+	        
+	        String cs = sw.getBuffer().toString();
+	        return cs;
+		 } 
+		 catch (Exception e) 
+		 { 
+			 return null; 
+		 }
+	}
+    
+	public boolean exportIndentedUtf8(String csFileName)
+	{
+		 try 
+		 {
+	        OutputFormat format = new OutputFormat(m_doc);
+	        format.setIndenting(true);
+	        format.setIndent(4);
+	        FileOutputStream out = new FileOutputStream(csFileName);
+	        Writer output = new BufferedWriter(new OutputStreamWriter(out, "utf-8"));
+	        //Writer output = new BufferedWriter( new FileWriter(csFileName) );
+	        XMLSerializer serializer = new XMLSerializer(output, format);
+	        serializer.serialize(m_doc);
+		 } 
+		 catch (Exception e) 
+		 { 
+			 return false; 
+		 }
+		 return true;
+	}
 	
 	private boolean exportToStream(StreamResult res, String csEncoding)
 	{
